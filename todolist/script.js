@@ -37,12 +37,12 @@ function createTodoElement(text, completed = false) {
     
     todoItem.innerHTML = `
         <span class="todo-text ${completed ? 'completed' : ''}">${text}</span>
+        <button class="sucess-btn"><i class="fa-solid fa-check"></i></button>
         <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
     `;
 
-    //ADD
     
-    todoItem.querySelector('.todo-text').addEventListener('click', () => {
+    todoItem.querySelector('.sucess-btn').addEventListener('click', () => {
         const isCompleted = todoItem.querySelector('.todo-text').classList.toggle('completed');
         const index = todos.findIndex(todo => todo.text === text);
         if (index !== -1) {
@@ -52,17 +52,43 @@ function createTodoElement(text, completed = false) {
         }
     });
     
-    //REMOVE
-    
+    // DELETE COM POPUP
     todoItem.querySelector('.delete-btn').addEventListener('click', () => {
-        todoItem.remove();
-        todos = todos.filter(todo => todo.text !== text);
-        saveTodos();
-        applyFilter(currentFilter);
+        Swal.fire({
+            title: "Tem certeza?",
+            text: "Você não poderá desfazer essa ação!",
+            icon: "warning",
+            background: "#1e1e1e",
+            color: "#ddd",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sim, excluir!",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                todoItem.remove();
+                todos = todos.filter(todo => todo.text !== text);
+                saveTodos();
+                applyFilter(currentFilter);
+    
+                Swal.fire({
+                    title: "Excluído!",
+                    text: "O item foi removido com sucesso.",
+                    icon: "success",
+                    background: "#1e1e1e",
+                    color: "#ddd",
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        });
     });
-
+    
     todoList.appendChild(todoItem);
     applyFilter(currentFilter);
+    
+    
 }
 
 //FILTRO
